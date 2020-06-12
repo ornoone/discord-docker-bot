@@ -1,0 +1,36 @@
+{
+  "name": "discord-docker-bot",
+  "version": "1.0.0",
+  "description": "a discord bot to start/stop docker container based on command. ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ornoone/discord-docker-bot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "docker",
+    "server"
+  ],
+  "author": "BERNARD Darius",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ornoone/discord-docker-bot/issues"
+  },
+  "homepage": "https://github.com/ornoone/discord-docker-bot#readme",
+  "dependencies": {
+    "discord-command-parser": "^1.4.3",
+    "discord.js": "^12.2.0",
+    "docker-events": "0.0.2",
+    "dockerode": "^3.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
