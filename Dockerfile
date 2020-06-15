@@ -5,9 +5,10 @@ ENV TOKEN=''
 ENV CONTAINER_NAME=''
 ENV CHANNEL=''
 
-COPY ./app/package.json ./app/package-lock.json /app/
+COPY ./package.json ./package-lock.json /app/
+WORKDIR /app/
 RUN npm install
 
 COPY server.js /app/server.js
 
-
+CMD ["node", "/app/server.js"]
