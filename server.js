@@ -2,6 +2,7 @@ const Discord = require("discord.js")
 const Docker = require('dockerode');
 const parser = require("discord-command-parser");
 const DockerEvents = require('docker-events');
+const stream = require('stream');
 
 
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
@@ -16,7 +17,11 @@ emitter.on('connect', () => {
 emitter.on("start", function(message) {
   console.log("container started: %j", message);
   if (message.Type === 'container' && message.Action === 'start' && message.Actor.Attributes.name === CONTAINER_NAME) {
-    sentToChannel(CHANNEL, "serveur démarré");
+    logUntilMessage(docker.getContainer(message.id), "Initialisation WebServerPlugin", 15).then(() => {
+      sentToChannel(CHANNEL, "jeu démarré, prêt pour recevoir des connexions");
+    }).catch((err) => {
+      sentToChannel(CHANNEL, "erreur durant la détéction du serveur: " + err);
+    });
   }
 });
 
@@ -47,6 +52,39 @@ function getContainer(message) {
         res.container = docker.getContainer(res.Id);
         resolve(res);
       }
+    });
+  });
+}
+
+function logUntilMessage(container, message, timeout=200) {
+  return new Promise((resolve, reject) => {
+    container.logs({
+      follow: true,
+      stdout: true,
+      stderr: true,
+      tail: 0,
+    }, function(err, stream){
+      if(err) {
+        reject(err);
+        return;
+      }
+      stream.on('data', (chunk) => {
+        let str = chunk.toString('utf8');
+        if (str.includes(message) ) {
+          resolve(str);
+          console.log("message sentinel detected: ", str);
+          stream.destroy();
+        }
+      });
+      stream.on('end', function(){
+        reject('EOF');
+      });
+
+
+      setTimeout(function() {
+        stream.destroy();
+        reject("timout");
+      }, timeout * 1000);
     });
   });
 }
@@ -97,7 +135,7 @@ client.on("message", message => {
       getContainer(message).then(container => {
         message.channel.send(`${container.Names[0]} en cours de démarrage`);
         container.container.start().then(() => {
-          message.channel.send(`${container.Names[0]} démarré`);
+          message.channel.send(`${container.Names[0]} démarré, lancement du serveur`);
         });
       });
       break;

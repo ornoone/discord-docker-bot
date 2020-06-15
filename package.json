@@ -28,7 +28,8 @@
     "discord-command-parser": "^1.4.3",
     "discord.js": "^12.2.0",
     "docker-events": "0.0.2",
-    "dockerode": "^3.2.0"
+    "dockerode": "^3.2.0",
+    "stream": "0.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
